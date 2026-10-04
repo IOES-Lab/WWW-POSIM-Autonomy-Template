@@ -28,3 +28,7 @@ www-posim-underwater --depth 2
 ROS 토픽과 힘의 단위·좌표계, 안전 중지, 여섯 과제와 채점 식, RViz·rosbag·WSS·SSH 터널 실습은 [한국어 교재](docs/course.ko.md)를 참고하세요. 설치형 기록은 연습이며 공개 순위에는 서버가 직접 측정한 지정 코스 기록만 반영됩니다. 오픈소스 로컬 실행기는 변조 방지 DRM이 아닙니다.
 
 [IOES-Lab, KMOU](https://lab.wschoi.com) · [시뮬레이터 소스](https://github.com/IOES-LAB/WWW-POSIM)
+
+실제 카메라는 프로필의 `sensor_msgs/msg/CompressedImage` 토픽으로 최대 1Hz 전달합니다. 수중 조사 영상은 RGBD 수중 셰이더가 적용됩니다. 공식 채점은 부산 예제의 수면 시작점 35.07446 N / 129.08468 E, 1배속·10ms 물리 간격을 사용하며 연습은 자유롭게 설정합니다.
+
+Linux/macOS는 `sh install.sh`, Windows PowerShell은 `./install.ps1`로 Python 템플릿·실행기를 설치합니다. Python 3.10 이상이 필요하며 ROS/Gazebo 런타임은 별도의 Docker 이미지입니다.

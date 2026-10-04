@@ -6,6 +6,8 @@ A student-owned ROS 2 autonomy project for the **World Wide Web Platform for Oce
 
 The starter contains a real LaserScan → occupancy map → A* → bounded body-velocity surface example, a small six-thruster underwater depth controller, a read-only telemetry / explicit command relay, and a licensed local-runtime launcher. The samples are starting points, not full-score solutions. Use AI, but test its code and explain your decisions.
 
+Linux/macOS installer: `sh install.sh` (set `WWW_POSIM_PYTHON` if needed). Windows PowerShell: `./install.ps1`. These install the small Python starter/launcher; the ROS/Gazebo runtime is a separately cached Docker image.
+
 ## Quick start
 
 Requirements: Python 3.10+, Git, and either a sourced ROS 2 installation or the instructor-provided Docker runtime (ROS 2 Lyrical / Gazebo Jetty). ROS `rclpy` is supplied by ROS, not by pip.
@@ -65,7 +67,7 @@ Defaults: installed simulator **3 wall-hours/day**; web server **1 wall-hour/day
 
 Only the command topics are forwarded through `/control`. `/ros` remains read-only; arbitrary publishes/services/actions, server shell access and pose teleportation are not allowed. Commands need a current session nonce, controller lease and increasing sequence. A **0.75s wall-time watchdog** returns propulsion to zero on stale commands; inertia and waves still move a vehicle. Browser Stop latches propulsion off until Enable. Multiple students never share one native world or ROS domain.
 
-Use `ros2 topic echo /model/wamv/scan`, RViz2 locally, and `ros2 bag record` for debugging. Camera preview is available through the browser sensor pane/API; the current default remote ROS profile does **not** promise Image/PointCloud2/sonar topics. Add a reviewed sensor profile before treating them as relay subscriptions. No sonar, acoustic pinger or COLREG implementation is claimed.
+Use `ros2 topic echo /model/wamv/scan`, RViz2 locally, and `ros2 bag record` for debugging. The profile also includes `/model/{robot}/camera/compressed` and the BlueROV2 inspection camera as `sensor_msgs/msg/CompressedImage` (JPEG, up to 1Hz simulation time). These are native sensor pixels; inspection applies the documented RGBD underwater shader. RViz Image can subscribe to the compressed transport. Raw Image, PointCloud2 and sonar are not promised by this default profile. No sonar, acoustic pinger or COLREG implementation is claimed. Official evaluation uses the fixed Busan example, a surface spawn at 35.07446 N / 129.08468 E, 1× speed and 10ms physics; practice regions remain user-selectable.
 
 ## Files to study
 
