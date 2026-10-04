@@ -244,3 +244,7 @@ Git 커밋, 플랫폼·규칙 버전, 기체/SDF·파라미터 버전, 센서 �
 - [Docker Windows/WSL2 GPU](https://docs.docker.com/desktop/features/gpu/), [Gazebo macOS](https://gazebosim.org/docs/latest/install_osx/), [Gazebo headless EGL](https://gazebosim.org/api/sim/10/headless_rendering.html)
 
 설치형 실행기는 동작 전에 서버와 런타임의 버전·프로토콜·채점 규칙·어댑터 내용 해시를 비교하고 5분마다 다시 검사합니다. 호환되지 않는 업데이트가 있으면 로컬 런타임을 종료합니다. 실행 중간이 아닌 실행 사이에 코드와 이미지를 업데이트하세요.
+
+## 실측 검증과 배포 상태
+
+[Native tests, real provisional ArduPilot scores and platform limits](validation.md).

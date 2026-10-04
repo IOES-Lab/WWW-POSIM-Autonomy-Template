@@ -87,3 +87,5 @@ Run `python -m unittest discover -s tests`. The pure tests need no Gazebo; they 
 Developed at [IOES-Lab, KMOU](https://lab.wschoi.com). Simulator source: [IOES-Lab/WWW-POSIM](https://github.com/IOES-LAB/WWW-POSIM).
 
 The installed launcher compares the runtime version, protocol, rule version and adapter content hash with the server before granting local operation, then rechecks every five minutes. An incompatible source/image update stops the local runtime; update between runs.
+
+[Measured native acceptance, real baseline scores and release limits](docs/validation.md).

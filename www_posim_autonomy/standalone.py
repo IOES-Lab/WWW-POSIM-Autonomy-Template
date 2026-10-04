@@ -60,6 +60,9 @@ def main():
     for name in ('nginx.conf',):shutil.copyfile(Path(__file__).with_name(name),folder/name)
     os.environ['WWW_POSIM_HOME']=str(folder)
     state=folder/'data'/'license.json';lease=None;renew_at=0.;version_at=time.monotonic()+300
+    request_file=folder/'data'/'session-request.json'
+    previous=json.loads(request_file.read_text()) if request_file.exists() else {}
+    handled_request=previous.get('nonce')
     try:
         state.unlink(missing_ok=True)
         compose(folder,['up','-d'],args.gpu)
@@ -69,11 +72,12 @@ def main():
         print('Simulator: http://127.0.0.1:3300. Keep this launcher running. Ctrl+C stops it.')
         while True:
             now=time.monotonic()
-            session_file=folder/'data'/'session.json';request_file=folder/'data'/'session-request.json'
+            session_file=folder/'data'/'session.json'
             session=json.loads(session_file.read_text()) if session_file.exists() else {}
             requested=json.loads(request_file.read_text()) if request_file.exists() else {}
+            if requested.get('nonce')==session.get('nonce'):handled_request=requested.get('nonce')
             running=session.get('kind')=='generated' and session.get('status') in ('starting','running')
-            pending=requested.get('kind')=='generated' and requested.get('nonce')!=session.get('nonce') and session.get('kind')=='idle'
+            pending=requested.get('kind')=='generated' and requested.get('nonce')!=handled_request and session.get('kind')=='idle' and session.get('status')=='running'
             if now>=version_at:
                 manifest=api.call('/versions')
                 if not compatible(manifest) or not runtime_matches(local,manifest):raise RuntimeError('Mandatory client/runtime update; restart after upgrading.')

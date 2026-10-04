@@ -211,3 +211,7 @@ Common faults:
 Reference check: 2026-10-04. These resources inform our course design; WWW-POSIM rules and measurements determine this class's results.
 
 The installed launcher compares the runtime version, protocol, rule version and adapter content hash with the server before granting local operation, then rechecks every five minutes. An incompatible source/image update stops the local runtime; update between runs.
+
+## Measured acceptance and release status
+
+[Native tests, real provisional ArduPilot scores and platform limits](validation.md).
