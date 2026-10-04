@@ -85,3 +85,5 @@ Use `ros2 topic echo /model/wamv/scan`, RViz2 locally, and `ros2 bag record` for
 Run `python -m unittest discover -s tests`. The pure tests need no Gazebo; they do not replace real robot/ROS integration tests. Never commit passwords, cookies, AIS keys, simulator administrator configuration or private evaluation data. GPL wave/simulator dependencies are not bundled into this MIT student source repository; retain their own licenses when distributing runtime images.
 
 Developed at [IOES-Lab, KMOU](https://lab.wschoi.com). Simulator source: [IOES-Lab/WWW-POSIM](https://github.com/IOES-LAB/WWW-POSIM).
+
+The installed launcher compares the runtime version, protocol, rule version and adapter content hash with the server before granting local operation, then rechecks every five minutes. An incompatible source/image update stops the local runtime; update between runs.

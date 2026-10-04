@@ -9,6 +9,7 @@ services:
       WWOS_START_IDLE: '1'
       WWOS_REQUIRE_LICENSE: '1'
       WWOS_BETA_ENABLED: '0'
+      WWOS_ALLOWED_ORIGINS: http://127.0.0.1:3300,http://localhost:3300,http://host.docker.internal:3300
       GZ_PARTITION: www-posim-standalone
       ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
       LIBGL_ALWAYS_SOFTWARE: '1'

@@ -162,7 +162,11 @@ ros2 topic echo /model/bluerov2/odometry
 ros2 bag record /model/bluerov2/odometry /model/bluerov2/imu /wwos/thrusters
 ```
 
-로컬 디스플레이가 있는 ROS 환경에서는 RViz2로 위치·TF·경로를 표시합니다. 기본 원격 프로필은 Odometry·IMU·TF와 WAM-V 라이다를 제공합니다. 수중 소나·음향 pinger를 제공한다고 가정하지 않습니다. 카메라는 브라우저 센서 창·프레임 API에서 확인할 수 있으며 ROS Image/PointCloud2 릴레이는 검토된 센서 프로필을 추가해야 합니다. 로봇의 질량·관성·메시·ArduPilot 파라미터는 별도 업로드/편집 기능으로 실험할 수 있지만 공식 기본 기체 평가에는 수정 모델을 사용하지 않습니다.
+로컬 디스플레이가 있는 ROS 환경에서는 RViz2로 위치·TF·경로를 표시합니다. 기본 원격 프로필은 Odometry·IMU·TF와 WAM-V 라이다를 제공합니다. 수중 소나·음향 pinger를 제공한다고 가정하지 않습니다. 실제 JPEG 카메라는 브라우저/API와 프로필의 `sensor_msgs/msg/CompressedImage` 토픽으로 제공합니다. `/model/bluerov2/camera/compressed`, `/model/bluerov2/inspection/image/compressed`, `/model/wamv/camera/compressed`를 RViz의 압축 Image 표시나 OpenCV에서 구독하세요. 최대 시뮬레이션 시간 1Hz이며 구독할 때 활성화합니다. 수중 조사 영상은 문서화한 RGBD 수중 셰이더를 적용합니다. RAW Image·PointCloud2·소나는 추가 검토한 센서 프로필이 필요합니다. 로봇의 질량·관성·메시·ArduPilot 파라미터는 별도 업로드/편집 기능으로 실험할 수 있지만 공식 기본 기체 평가에는 수정 모델을 사용하지 않습니다.
+
+## 공식 평가 조건
+
+공식 평가는 부산 예제에서 **35.07446 N / 129.08468 E**의 수면으로 시작하며 고정 지형, 10ms 물리 간격, 목표 1배속을 사용합니다. 다른 지역·배속 실험은 연습 모드에서 합니다. 공식 파도나 물리 설정이 바뀌면 채점 시작을 거부하고, 채점 중에는 환경을 바꿀 수 없습니다. 새 시도는 월드를 다시 시작합니다. `maritime-class-2`는 보수적 3.5m WAM-V 선체와 2m 안전 보너스가 양립하도록 수상 게이트 폭을 13m로 정했습니다. 수중 게이트는 10m입니다. 이전 개발 기록은 이전 규칙 버전으로 분리합니다.
 
 ## 부문별 세 과제
 
@@ -238,3 +242,5 @@ Git 커밋, 플랫폼·규칙 버전, 기체/SDF·파라미터 버전, 센서 �
 - [WUURC 2025 공식 규칙](https://www.w2urc.org/static/upload/file/20250428/1745809633622443.pdf)
 - [ArduPilot 장애물 회피](https://ardupilot.org/rover/docs/common-object-avoidance-landing-page.html)
 - [Docker Windows/WSL2 GPU](https://docs.docker.com/desktop/features/gpu/), [Gazebo macOS](https://gazebosim.org/docs/latest/install_osx/), [Gazebo headless EGL](https://gazebosim.org/api/sim/10/headless_rendering.html)
+
+설치형 실행기는 동작 전에 서버와 런타임의 버전·프로토콜·채점 규칙·어댑터 내용 해시를 비교하고 5분마다 다시 검사합니다. 호환되지 않는 업데이트가 있으면 로컬 런타임을 종료합니다. 실행 중간이 아닌 실행 사이에 코드와 이미지를 업데이트하세요.

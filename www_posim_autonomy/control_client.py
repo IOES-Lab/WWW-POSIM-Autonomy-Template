@@ -33,7 +33,7 @@ class ControlClient:
             if not self.recent():self.stop_event.wait(.05);continue
             ws=None
             try:
-                ws=websocket.create_connection(self.url,timeout=1,**({'cookie':self.cookie,'origin':self.origin} if self.cookie else {}))
+                ws=websocket.create_connection(self.url,timeout=1,origin=self.origin,**({'cookie':self.cookie} if self.cookie else {}))
                 ws.send(json.dumps({'op':'acquire','session_nonce':self.profile['session_nonce']}))
                 acquired=json.loads(ws.recv())
                 if acquired.get('op')!='acquired':raise ValueError(acquired.get('detail','control_acquire_rejected'))

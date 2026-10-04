@@ -12,6 +12,7 @@ import sys
 import time
 import uuid
 import webbrowser
+import urllib.request
 from . import __version__
 from .connect import API
 
@@ -19,6 +20,18 @@ PROTOCOL=2
 def compatible(manifest):
     parse=lambda s:tuple(int(v) for v in s.split('.'))
     return manifest['protocol']==PROTOCOL and parse(__version__)>=parse(manifest['minimum_client'])
+
+def runtime_manifest(timeout=40):
+    deadline=time.monotonic()+timeout
+    while True:
+        try:
+            with urllib.request.urlopen('http://127.0.0.1:3300/api/versions',timeout=3) as response:return json.load(response)
+        except (OSError,ValueError):
+            if time.monotonic()>=deadline:raise RuntimeError('Local runtime did not become ready.')
+            time.sleep(.5)
+
+def runtime_matches(local,server):
+    return all(server.get(k) is not None and local.get(k)==server.get(k) for k in ('version','protocol','rules_version','adapter_sha256'))
 
 def compose(directory,action,gpu=False):
     files=['-f',str(Path(__file__).with_name('standalone-compose.yaml'))]
@@ -47,9 +60,13 @@ def main():
     for name in ('nginx.conf',):shutil.copyfile(Path(__file__).with_name(name),folder/name)
     os.environ['WWW_POSIM_HOME']=str(folder)
     state=folder/'data'/'license.json';lease=None;renew_at=0.;version_at=time.monotonic()+300
-    compose(folder,['up','-d'],args.gpu);webbrowser.open('http://127.0.0.1:3300')
-    print('Simulator: http://127.0.0.1:3300. Keep this launcher running. Ctrl+C stops it.')
     try:
+        state.unlink(missing_ok=True)
+        compose(folder,['up','-d'],args.gpu)
+        local=runtime_manifest()
+        if not runtime_matches(local,manifest):raise RuntimeError('Runtime update required. Use simulator image tags matching the server; unchanged Docker layers are reused.')
+        webbrowser.open('http://127.0.0.1:3300')
+        print('Simulator: http://127.0.0.1:3300. Keep this launcher running. Ctrl+C stops it.')
         while True:
             now=time.monotonic()
             session_file=folder/'data'/'session.json';request_file=folder/'data'/'session-request.json'
@@ -58,7 +75,8 @@ def main():
             running=session.get('kind')=='generated' and session.get('status') in ('starting','running')
             pending=requested.get('kind')=='generated' and requested.get('nonce')!=session.get('nonce') and session.get('kind')=='idle'
             if now>=version_at:
-                if not compatible(api.call('/versions')):raise RuntimeError('Mandatory client update; restart after upgrading.')
+                manifest=api.call('/versions')
+                if not compatible(manifest) or not runtime_matches(local,manifest):raise RuntimeError('Mandatory client/runtime update; restart after upgrading.')
                 version_at=now+300
             if running or pending:
                 if not lease:

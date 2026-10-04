@@ -153,7 +153,11 @@ www-posim-underwater --depth 2
 
 BlueROV2 command order is thrusters 1…6. The native joint axes are local −Z. Their horizontal rotations mean surge signs `[-,-,+,+]`, yaw signs `[-,+,+,-]`, and both vertical axes point down. The allocation helper converts a desired upward force to negative vertical thrust. Change inertia/thruster transforms in your SDF and you must re-derive this map. The starter holds depth for 45 wall-seconds then requests the surface; its simple PD loop is not a robust 6-DOF controller or a complete underwater slalom solution. At accelerated simulation speed replace wall-based mission phases with ROS simulation time, while retaining wall-age checks for communications.
 
-Use RViz2 in a client with a supported display, `ros2 bag record /model/bluerov2/odometry /model/bluerov2/imu /wwos/thrusters`, and plots of depth error/force. The default profile currently provides odometry, IMU, TF and WAM-V lidar, not an invented underwater sonar. Camera data are available through the browser sensor pane and frame API; remote ROS Image subscriptions require adding a reviewed profile. Native autonomy can use further ROS packages in its local client container without installing unreviewed packages into the shared server.
+Use RViz2 in a client with a supported display, `ros2 bag record /model/bluerov2/odometry /model/bluerov2/imu /wwos/thrusters`, and plots of depth error/force. The default profile currently provides odometry, IMU, TF and WAM-V lidar, not an invented underwater sonar. Camera data are available through the browser pane/API and the profile's `sensor_msgs/msg/CompressedImage` topics: `/model/bluerov2/camera/compressed`, `/model/bluerov2/inspection/image/compressed`, or `/model/wamv/camera/compressed`. JPEG transmission is capped at 1Hz simulation time and activates on subscription. Inspection uses the documented RGBD water shader. Decode `msg.data` with OpenCV or use RViz Image/Compressed transport. RAW Image, PointCloud2 and sonar require an additional reviewed sensor profile. Native autonomy can use further ROS packages in its local client container without installing unreviewed packages into the shared server.
+
+## Official evaluation conditions
+
+Official evaluation uses the fixed Busan example and starts at 35.07446 N / 129.08468 E on the sea surface, with fixed terrain, 10ms physics and 1× target speed. Practice remains user-selectable and can run faster locally. A changed official wave field or physics setting is rejected when scoring begins; environment controls are locked during a scored run. Restart a world before another official attempt. Rule `maritime-class-2` uses 13m-wide surface gates so the 3.5m hull proxy can earn the full 2m clearance bonus; underwater gates remain 10m wide. Earlier development records use a separate rules version.
 
 ## Six tasks
 
@@ -205,3 +209,5 @@ Common faults:
 - [Docker Windows/WSL2 GPU support](https://docs.docker.com/desktop/features/gpu/), [Gazebo macOS installation](https://gazebosim.org/docs/latest/install_osx/) and [Gazebo headless rendering](https://gazebosim.org/api/sim/10/headless_rendering.html).
 
 Reference check: 2026-10-04. These resources inform our course design; WWW-POSIM rules and measurements determine this class's results.
+
+The installed launcher compares the runtime version, protocol, rule version and adapter content hash with the server before granting local operation, then rechecks every five minutes. An incompatible source/image update stops the local runtime; update between runs.

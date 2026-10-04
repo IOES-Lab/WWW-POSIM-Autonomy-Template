@@ -1,4 +1,4 @@
-# Scoring specification — maritime-class-1
+# Scoring specification — maritime-class-2
 
 This is the class's scoring system, not an official RobotX/VRX/RoboSub scoring table. Source of truth is the simulator's `competition_core.py`; a client cannot submit a claimed numeric score.
 
@@ -18,6 +18,8 @@ score      = clamp(raw, 0, 100)
 ```
 
 With no obstacle geometry safety is `10c`. Hull envelopes are conservative 3.5m radius for WAM-V and 0.5m for BlueROV2, with vertical overlap against each cylinder. This is a documented geometry proxy, **not measured contact force**, and can penalize a near pass before exact mesh contact. The same proxy applies to all entrants. A collision caps the score at 50. Each obstacle is counted once per run. Land/seafloor collision force integration is not an additional invented scoring input; native terrain safety/motion checks can stop or invalidate the run.
+
+Rule `maritime-class-2` uses 13m-wide surface gates, leaving more than 2m between the centered 3.5m hull proxy and each 0.65m buoy; underwater gates remain 10m wide. Earlier 10m surface-gate development records use `maritime-class-1` and are excluded. Official evaluations require the fixed Busan example, a surface start at 35.07446 N / 129.08468 E, target 1× and a 10ms timestep.
 
 Arrival envelopes: horizontal error <2m surface / <1m underwater, depth error <0.5m; a holding target additionally requires yaw error <0.35rad. Consecutive hold time resets on leaving its envelope. Ordered target arrival is used in the simplified gate task; arbitrary segment crossings are not yet a separate gate-plane detector. Stationkeeping precision measurement starts on first entry into the target envelope, so time spent approaching is counted for speed rather than as holding error. Route accuracy projects onto the current bounded segment. Final hold error is measured once inside its arrival envelope.
 
@@ -47,3 +49,7 @@ Server stores timestamp, owner ID, public alias, task, rules version, course see
 Pinned rows use a freshly started Autopilot world with the bundled vehicle-default parameter profile and simulator navigation integration. The operator invokes the identical ordered targets, measures native state and records the parameter digest. No parameter-edit session can be used as a baseline; parameter changes during a run invalidate it. Default avoidance/perception is not presumed. Parameters required for Gazebo/SITL/external navigation are part of the shipped profile, so this is not a claim about pure factory hardware settings.
 
 Unmeasured rows say **Not measured**, never a made-up zero or 100. One real seed is a provisional baseline, not a completed five-seed ranking. Course or parameter/model changes require a new baseline/rules version. The baseline remains visible even when students exceed its score.
+
+## Baseline integrity
+
+The shipped ArduPilot baseline is measured in a fresh server world. The full FCU parameter list is forced and checked before and after each run. Only `SIM_SPEEDUP` (checked separately at 1×), `STAT_RUNTIME`/`STAT_FLTTIME` (read-only elapsed counters), and `BARO1_GND_PRESS`/`BARO2_GND_PRESS`/`BARO3_GND_PRESS` (read-only, volatile automatic ground-pressure calibration) are excluded from the configuration hash. A changed control parameter invalidates the score. A run stays in `finalizing` until controller shutdown, the end check and the database commit finish; releasing its slot beforehand invalidates it. Invalid development attempts are retained privately and excluded from public standings. A pinned zero is a valid unsuccessful run, not a fabricated success.

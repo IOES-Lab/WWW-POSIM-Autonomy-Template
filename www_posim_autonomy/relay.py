@@ -83,7 +83,7 @@ def worker():
     while not stop.is_set():
         ws=None
         try:
-            ws=websocket.create_connection(args.url,timeout=2,**({'cookie':cookie,'origin':args.origin} if cookie else {}))
+            ws=websocket.create_connection(args.url,timeout=2,origin=args.origin,**({'cookie':cookie} if cookie else {}))
             connection_count+=1
             for entry in entries:
                 ws.send(json.dumps({'op':'subscribe','id':entry['name'],'topic':entry['name'],'type':entry['type'],'throttle_rate':100 if entry['name']!='/clock' else 20,'queue_length':1}))
