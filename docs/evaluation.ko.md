@@ -10,7 +10,7 @@
 
 **Evaluate on server**를 누르면 버전을 확인하고 FIFO 대기열에 들어갑니다. 고정 코스가 준비되면 최신 프로필을 내려받고 실제 Odometry와 추진기 준비를 기다린 뒤, 서버 채점을 시작하고 로컬 명령을 실행합니다. 대기 중에는 사용 시간을 차감하지 않으며 순번과 다음 슬롯 예상 시간을 표시합니다. 종료 시 `result.json`, `relay-report.json`, `relay.log`, `algorithm.log`를 저장하고 자신이 만든 프로세스와 서버 슬롯을 정리합니다. **Cancel**은 실행을 멈추고 채점이 시작됐다면 `interrupted-result.json`도 남깁니다. 중단한 실행은 공식 점수를 받지 않습니다. 정리가 끝날 때까지 앱을 열어 두세요.
 
-비밀번호는 작업마다 한 번 입력하며 설정·명령행·결과 파일에 저장하지 않습니다. 짧은 인증 쿠키는 PC 클라이언트와 중계의 비공개 표준입력으로 전달합니다. Docker 클라이언트에는 선택한 코드와 결과 폴더만 연결합니다. 로컬 ROS 도메인은 73이며 서버 DDS 포트를 공개하지 않습니다.
+비밀번호는 작업마다 한 번 입력하며 설정·명령행·결과 파일에 저장하지 않습니다. 짧은 인증 쿠키는 PC 클라이언트와 중계의 비공개 표준입력으로 전달합니다. Docker 클라이언트에는 선택한 코드와 결과 폴더만 연결합니다. 로컬 ROS 도메인은 76이며 서버 DDS 포트를 공개하지 않습니다.
 
 ```sh
 www-posim evaluate --server https://YOUR_SERVER/api --email YOU@example.edu \
@@ -19,7 +19,7 @@ www-posim evaluate --server https://YOUR_SERVER/api --email YOU@example.edu \
   -- python3 my_controller.py
 ```
 
-Linux 네이티브 ROS에서는 환경을 source한 뒤 `--client-image`를 생략합니다. **Practice locally**는 실행 중인 설치형 `http://127.0.0.1:3300/api`를 사용합니다. 설치형 실행기의 로그인·시간 권한을 우회하지 않습니다. 샘플 부표 회피 코드는 모든 채점 과제를 해결하는 완성 코드가 아니며, 과제 목표와 유지 조건을 읽어 직접 확장해야 합니다.
+Linux 네이티브 ROS 또는 Apple Silicon 앱의 ROS 환경을 불러온 뒤 `--client-image`를 생략합니다. **Practice locally**는 실행 중인 설치형 `http://127.0.0.1:3300/api`를 사용합니다. 설치형 실행기의 로그인·시간 권한을 우회하지 않습니다. 샘플 부표 회피 코드는 모든 채점 과제를 해결하는 완성 코드가 아니며, 과제 목표와 유지 조건을 읽어 직접 확장해야 합니다.
 
 ## ROS와 기록 신뢰성
 
@@ -27,21 +27,20 @@ Linux 네이티브 ROS에서는 환경을 source한 뒤 `--client-image`를 생�
 
 로컬 점수·로그를 보고서용으로 내보낼 수 있습니다. 그러나 기기 소유자는 오픈소스 시뮬레이터·시간·로그를 수정할 수 있으므로, 같은 기기가 만든 해시나 서명만으로 부정행위를 막을 수 없습니다. 공식 순위는 **서버가 직접 관측하고 저장한 실제 궤적만** 반영합니다. JSON의 SHA-256은 파일 변경 확인용이며 공정성 증명이 아닙니다. 내보내기는 소유자만 가능하고 서버 슬롯을 종료한 뒤에도 run ID로 받을 수 있습니다. 이메일은 포함하지 않습니다. JSON 점수 업로드만으로 순위 점수를 받는 API는 제공하지 않습니다. 공식 실행 중에도 파도·물리 조건을 검사하고 변화가 있으면 무효 처리합니다. 5개 seed 묶음과 실제 기본 Autopilot 기준선은 기존 규칙을 사용합니다.
 
-## 실제 배포 범위
+## 설치와 업데이트
 
-Linux·macOS·Windows [설치본 CI](https://github.com/IOES-Lab/WWW-POSIM-Autonomy-Template/actions/runs/37191524725)가 모두 통과했습니다. 각 OS 바이너리에서 `--version`을 확인하고 Windows `.exe`와 Linux `.deb`를 생성했습니다. 보관 기간 내 GitHub 실행 페이지에서 아티팩트를 받을 수 있습니다. 클라이언트 빌드 검증이며 각 OS의 GUI 설치·전체 시뮬레이터 엔진 검증은 별도입니다.
+Evaluation 클라이언트와 시뮬레이터 앱은 별도로 설치합니다. 템플릿 저장소에서 `python -m pip install .`을 실행하면 Python 패키지가 설치됩니다. `www-posim evaluation`은 데스크톱 화면을, `www-posim evaluate`는 같은 절차를 터미널에서 실행합니다. Apple Silicon용 ROS·Gazebo·Metal 엔진은 [시뮬레이터 배포판](https://github.com/woensug-choi/homebrew-www-posim)을 사용하고, 다른 운영체제의 준비 절차는 [교재의 설치 안내](course.ko.md#installation)를 참고하세요.
 
-| 형식 | 포함 내용 | 이번 검증 |
-|---|---|---|
-| Python wheel | 템플릿·실행기·채점 GUI/CLI | 0.2.2 빌드, 단위 검사 통과 |
-| Mac ARM64 `.app` | Python/Tk를 포함한 클라이언트, 압축 약 12 MB | 빌드·CLI 버전 확인. Mac 잠금으로 앱 화면 직접 검증은 미완료 |
-| Debian `.deb` | Python 클라이언트·데스크톱 진입점 | Ubuntu 컨테이너에서 빌드·추출·버전 확인. 전체 네이티브 엔진 설치본은 아님 |
-| Homebrew Cask | 해시를 고정한 Mac 앱 archive | 로컬 파일용 생성 완료. 같은 파일을 공개한 뒤 URL 설정 필요 |
-| Windows `.exe` | PyInstaller 클라이언트와 Inno Setup | Windows CI에서 `.exe` 생성·CLI 버전 검사 통과. GUI 설치와 네이티브 GPU 엔진 시험은 미완료 |
-| Docker 이미지 | 엔진 또는 PC용 ROS 제어 클라이언트 | 로컬 ARM64 빌드 유지. 공개 AMD64/ARM64 릴리스는 추가 필요 |
+Apple Silicon에서는 앱에 포함된 ROS 환경을 불러온 뒤 Python Evaluation 클라이언트를 설치하고 실행합니다.
 
-`python tools/build_installer.py wheel`, `desktop`, `deb`로 빌드합니다. 데스크톱 바이너리는 대상 OS에서 만들어야 합니다([PyInstaller](https://pyinstaller.org/en/latest/)). `packaging/windows.iss`와 GitHub Actions 워크플로는 Windows 설치본 생성을 준비하며 공개 릴리스를 자동 발행하지 않습니다.
+```sh
+eval "$(/Applications/WWW-POSIM.app/Contents/MacOS/WWW-POSIM --ros-env)"
+python -m pip install /PATH/TO/WWW-POSIM-Autonomy-Template
+www-posim evaluate --server https://YOUR_SERVER/api --email YOU@example.edu \
+  --task surface_station --alias MyTeam --project ./my_project \
+  --output ./evaluation-results -- python my_controller.py
+```
 
-엔진 네이티브 배포는 Linux부터 검증하는 순서를 권합니다. ROS/Gazebo/POSIM과 독립 파도 의존성·자산·각 라이선스를 함께 유지해야 합니다. [ROS Lyrical 공식 플랫폼](https://github.com/ros2/ros2_documentation/blob/rolling/source/Get-Started/Releases/lyrical/supported-platforms.rst), [Gazebo Mac 설치](https://gazebosim.org/docs/latest/install_osx/), [실험 단계 Windows 설치](https://gazebosim.org/docs/latest/install_windows/)를 기준으로 검증하며, Gazebo 하나가 설치됐다고 전체 POSIM 스택의 호환성이 확인되지는 않습니다. 현재 검증한 엔진 경로는 Docker입니다. [Docker Desktop GPU 지원](https://docs.docker.com/desktop/features/gpu/)은 이 Gazebo 컨테이너에 Apple GPU를 전달하지 않으며 NVIDIA/WSL2도 실제 하드웨어 검증이 필요합니다.
+이 ROS Python을 사용할 때는 `--client-image`를 생략합니다. 별도로 제공되는 컴파일된 Evaluation 앱은 내장 Python에 ROS가 없으므로 강사의 ROS 클라이언트 컨테이너를 사용합니다. 공식 시뮬레이션과 채점은 두 방식 모두 서버에서 실행됩니다.
 
-실행 전과 실행 중 5분마다 버전을 확인하며 업데이트는 실행 사이에 적용합니다. 클라이언트·어댑터 변경은 작은 패키지와 바뀐 Docker layer만 받지만 의존성·모델 변경은 큰 다운로드가 될 수 있습니다. 새 Evaluation은 0.2.2이며 기존 최소 호환 버전은 0.2.1입니다. 공개 설치 릴리스에는 일치하는 엔진/클라이언트 이미지, 체크섬, 필요한 서명·notarization, HTTPS·SMTP 운영 설정과 대상 OS 검증이 추가로 필요합니다.
+실행 전과 실행 중 5분마다 버전을 확인하고 업데이트는 실행 사이에 적용합니다. 0.2.2에는 Evaluation 화면과 CLI가 포함되어 있으며 서버는 통신 프로토콜과 채점 규칙 버전도 확인합니다. 엔진 의존성과 로봇 자산은 버전이 바뀌기 전까지 재사용합니다.

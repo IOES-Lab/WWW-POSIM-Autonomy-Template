@@ -64,6 +64,8 @@ class Orchestration(unittest.TestCase):
                 Path(command[command.index('--ready-file')+1]).write_text(json.dumps(dict(session_nonce=nonce)))
             else:events.append('algorithm_started');self.assertIs(kwargs['stdin'],__import__('subprocess').DEVNULL)
             self.assertNotIn(secret,' '.join(command))
+            self.assertEqual(kwargs['env']['ROS_DOMAIN_ID'],'76')
+            self.assertEqual(kwargs['env']['ROS_AUTOMATIC_DISCOVERY_RANGE'],'LOCALHOST')
             return Process()
         with tempfile.TemporaryDirectory() as folder,patch('www_posim_autonomy.evaluate.subprocess.run',return_value=SimpleNamespace(returncode=0)),patch('www_posim_autonomy.evaluate.start_process',side_effect=spawn),patch('www_posim_autonomy.evaluate.stop_process'):
             result=evaluate(Client(),'surface_station',['python3','controller.py'],folder,notify=lambda _:None)

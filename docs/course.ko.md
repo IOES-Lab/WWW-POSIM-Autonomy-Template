@@ -53,15 +53,20 @@ AI 코딩·디버깅·문서 작성을 허용합니다. 단, 사용 기록, 알�
 |---|---|---|
 | Linux | Docker Engine + 해당 CPU 구조의 런타임, 필요하면 네이티브 ROS | NVIDIA 드라이버·Container Toolkit·`--gpu`; 실제 EGL 렌더러 확인 필요 |
 | Windows PC | Docker Desktop·WSL2, Ubuntu WSL 터미널에서 실행 | NVIDIA/WSL2 전달 경로 사용; 그래픽·센서 실제 검증 필요 |
-| Apple Silicon Mac | Docker Desktop ARM64 + Python 3.10 이상 | 현재 Gazebo 컨테이너는 CPU 렌더링. Apple GPU 직접 전달 불가 |
-| Intel Mac | 빌드·배포된 AMD64 런타임 필요 | CPU 경로, 현재 Intel Mac 실제 시험 미완료 |
+| Apple Silicon Mac · macOS 27 이상 | 네이티브 WWW-POSIM DMG·Homebrew 앱과 포함된 ROS 환경 | Mac GPU의 Gazebo Metal 렌더링 |
 
-Gazebo 자체의 macOS Homebrew 설치 문서는 있지만 POSIM·ROS·외부 파도 플러그인까지 네이티브로 통합하는 것은 별도 작업입니다. 이를 완료된 Mac GPU 지원으로 표시하지 않습니다. 브라우저 접속만으로 학생 컴퓨터에 ROS가 설치되지는 않습니다.
+Apple Silicon에서는 [공개 DMG·Homebrew 배포판](https://github.com/woensug-choi/homebrew-www-posim)의 네이티브 앱을 설치합니다. 앱에서 로그인하고 ROS 2 직접 제어 월드를 준비합니다. 제어 코드를 실행할 터미널마다 포함된 ROS 환경을 불러옵니다.
+
+```sh
+eval "$(/Applications/WWW-POSIM.app/Contents/MacOS/WWW-POSIM --ros-env)"
+```
+
+이 환경의 Python으로 `--system-site-packages` 가상 환경을 만들고 템플릿 프로젝트에서 `pip install -e .`를 실행합니다. 아래 Docker 설치 절차는 Linux·Windows용입니다.
 
 1. 공식 배포 경로로 Docker와 Python 3.10 이상을 설치합니다. Windows는 WSL2를 활성화하고 Ubuntu 터미널을 사용합니다. Docker VM에 8GB 이상, 메모리 24GB 이상 컴퓨터라면 12GB 정도 할당을 권장합니다. 성능 시험 중 다른 무거운 빌드는 중단합니다.
 2. GitHub 템플릿에서 **Use this template → Create a new repository**로 팀 저장소를 만들고 클론합니다.
 3. 프로젝트에서 `python3 -m venv --system-site-packages .venv`, 활성화 후 `pip install -e .`를 실행합니다.
-4. 강사가 제공하는 네이티브 CPU 구조의 런타임·웹 이미지 태그를 받습니다. 현재 ARM64 이미지는 로컬에 빌드되어 있으며 공개 AMD64/ARM64 레지스트리 배포는 아직 설정되지 않았습니다. 운영자가 상위 저장소를 빌드해 제공할 때 외부 GPL 의존성의 소스·라이선스도 유지해야 합니다. ARM 에뮬레이션으로 x86 GPU 서버 성능을 평가하지 마세요.
+4. 강사가 제공하는 네이티브 CPU 구조의 런타임·웹 이미지 태그를 받습니다. 이미지 버전은 수업 서버와 맞아야 하며, 함께 제공된 외부 의존성의 소스·라이선스도 유지합니다. ARM 에뮬레이션으로 x86 GPU 서버 성능을 평가하지 마세요.
 5. 설치형을 실행합니다.
 
 ```bash
@@ -74,11 +79,11 @@ www-posim --server https://YOUR_SERVER/api --email YOU@example.edu \
 
 `http://127.0.0.1:3300`을 엽니다. 실행기를 켜둬야 권한이 갱신되며 Ctrl+C로 컨테이너와 권한을 종료합니다. 데이터는 `~/.www-posim/data`에 남습니다. 비밀번호를 저장하지 않고 기기 식별용 임의 ID만 저장합니다. 실행 권한은 60초, 갱신 간격은 20초입니다. 연결·갱신 실패나 시간 만료 시 로컬 실행이 중단됩니다. 유휴·지형 준비에는 권한을 시작하지 않지만 네이티브 월드 시작·카메라 준비는 설치형 사용 시간에 포함됩니다.
 
-최초 다운로드에는 ROS·Gazebo·GIS·SITL 때문에 큰 이미지가 필요합니다. 이후 의존성 레이어를 재사용하고 작은 Python·웹 레이어만 갱신하도록 구성합니다. 시작 전과 5분마다 버전·프로토콜을 확인하며 최소 버전 불일치 시 새 실행 전에 업데이트해야 합니다. 임의 URL에서 프로그램을 내려받아 실행하지 않습니다. 서명된 데스크톱 설치 파일·앱스토어 배포·오프라인 라이선스까지 완료됐다고 주장하지 않습니다.
+최초 다운로드에는 ROS·Gazebo·GIS·SITL 때문에 큰 이미지가 필요합니다. 이후 의존성 레이어를 재사용하고 작은 Python·웹 레이어만 갱신하도록 구성합니다. 시작 전과 5분마다 버전·프로토콜을 확인하며 최소 버전 불일치 시 새 실행 전에 업데이트해야 합니다. 임의 URL에서 프로그램을 내려받아 실행하지 않습니다. 학생 도구와 시뮬레이터 앱은 별도로 설치하며, 실행 시간 권한은 계정 서버가 갱신합니다.
 
 ### 네이티브 ROS 없이 실습 터미널 실행
 
-세 운영체제 모두 로컬 ROS 클라이언트 컨테이너에서 코드를 실행할 수 있습니다. 서버에 임의 패키지를 설치하는 대신 학생의 컴퓨터에서 필요한 ROS 패키지를 추가하세요.
+Linux·Windows에서는 로컬 ROS 클라이언트 컨테이너로 코드를 실행할 수 있습니다. Apple Silicon에서는 앱에 포함된 네이티브 ROS 환경을 사용합니다. 서버에 임의 패키지를 설치하는 대신 학생의 컴퓨터에서 필요한 ROS 패키지를 추가하세요.
 
 ```bash
 docker run --rm -it --cpus 1 --memory 1g \
@@ -247,7 +252,7 @@ Git 커밋, 플랫폼·규칙 버전, 기체/SDF·파라미터 버전, 센서 �
 
 ## 실측 검증과 배포 상태
 
-[Native tests, real provisional ArduPilot scores and platform limits](validation.md).
+기본 Autopilot 점수와 5개 seed 순위 규칙은 [채점 규칙](scoring.md)을 참고하세요.
 
 현재 설치형 클라이언트의 최소 버전은 **0.2.1**입니다. 이전 0.2.0은 임무 시간·종료 수정 때문에 업데이트해야 합니다. 실행 중에는 5분마다 호환성을 확인하고, 필요한 업데이트는 실행을 종료한 뒤 적용합니다.
 

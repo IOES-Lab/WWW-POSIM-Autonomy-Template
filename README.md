@@ -6,7 +6,7 @@ A student-owned ROS 2 autonomy project for the **World Wide Web Platform for Oce
 
 The starter contains a real LaserScan → occupancy map → A* → bounded body-velocity surface example, a small six-thruster underwater depth controller, a read-only telemetry / explicit command relay, and a licensed local-runtime launcher. The samples are starting points, not full-score solutions. Use AI, but test its code and explain your decisions.
 
-Linux/macOS installer: `sh install.sh` (set `WWW_POSIM_PYTHON` if needed). Windows PowerShell: `./install.ps1`. These install the small Python starter/launcher; the ROS/Gazebo runtime is a separately cached Docker image.
+Linux/macOS installer: `sh install.sh` (set `WWW_POSIM_PYTHON` if needed). Windows PowerShell: `./install.ps1`. These install the small student project and Evaluation tools. Install the simulator application separately: native DMG/Homebrew on Apple Silicon, or DEB/EXE with matching Docker images on Ubuntu/Windows.
 
 ## Quick start
 
@@ -20,7 +20,7 @@ python3 -m venv --system-site-packages .venv
 pip install -e .
 ```
 
-On Ubuntu with native ROS, first source `/opt/ros/lyrical/setup.bash`. On Mac or Windows use the ROS terminal in the simulator container. [Detailed operating-system setup](docs/course.md#installation) includes the Docker workflow, WSL2, CPU/GPU differences and troubleshooting.
+On Ubuntu with native ROS, first source `/opt/ros/lyrical/setup.bash`. On Apple Silicon, load the simulator app’s bundled ROS environment with `eval "$(/Applications/WWW-POSIM.app/Contents/MacOS/WWW-POSIM --ros-env)"`. On Windows use a compatible ROS terminal in WSL or a client container. [Detailed operating-system setup](docs/course.md#installation) includes the Docker workflow, WSL2, CPU/GPU differences and troubleshooting.
 
 ## Web-server controls
 
@@ -36,7 +36,7 @@ www-posim-surface
 www-posim-underwater --depth 2
 ```
 
-For localhost testing use `http://127.0.0.1:3000/api`. The connection uses authenticated HTTPS/WSS; an SSH tunnel is optional. Passwords are prompted, never command-line arguments. The helper downloads a fresh `profile.json`. Login is prompted once; a short-lived cookie reaches the relay through private standard input and is not persisted.
+For localhost testing use `http://127.0.0.1:3000/api`. The connection uses authenticated HTTPS/WSS on the server’s normal address. Passwords are prompted, never command-line arguments. The helper downloads a fresh `profile.json`. Login is prompted once; a short-lived cookie reaches the relay through private standard input and is not persisted.
 
 The surface starter solves the original **two-buoy practice example**, not all competition tasks. Extend it to read the course targets from `profile.json` and to maintain position/heading, identify markers, route around obstacles and return safely. Underwater force allocation is explicitly documented and bounded; start with depth holding before adding horizontal movement.
 
@@ -53,7 +53,7 @@ www-posim --server https://YOUR_SERVER/api --email YOU@example.edu \
 
 Open `http://127.0.0.1:3300`. Keep the launcher running. It stops the local simulator on logout, expired permission, quota exhaustion or loss of its server lease. Idle world preparation does not start a lease; launching a native world does. Initial renderer warm-up counts in the local lease. Repeated local runs can request a faster simulation target; achieved speed depends on CPU, GPU and sensors.
 
-**Release status:** the thin installer and Compose application are provided. The current simulator images are built locally on ARM64; publicly downloadable AMD64/ARM64 runtime releases are not yet published. Ask the instructor for images, or build the simulator repository. Do not interpret a source download as a validated Windows/Linux GPU release. Docker caches unchanged layers for later updates.
+Apple Silicon users install the native simulator from [the public DMG/Homebrew distribution](https://github.com/woensug-choi/homebrew-www-posim). It includes the ROS/Gazebo/Metal engine and Autopilot. Launch that app, sign in and start a ROS 2 direct-control world. In every controller terminal load its `--ros-env` exports, then run `www-posim-connect --server http://127.0.0.1:3300/api --local --control` and your student node. Ubuntu/Windows use the instructor-provided matching Docker images with the command above. Keep the simulator running while testing.
 
 Defaults: installed simulator **3 wall-hours/day**; web server **1 wall-hour/day**, **two isolated slots**, initially five admitted web members. Daily limits reset at 00:00 UTC. Class coupons or operator approval can grant **standalone-only unlimited use** for six calendar months or a specified semester. Web access is separate. License leases are 60 seconds, refreshed every 20 seconds; only one installed run per account. This open-source client is not tamper-proof DRM. Only server-measured, approved course runs count for the public leaderboard.
 
@@ -88,10 +88,10 @@ Use `ros2 topic echo /model/wamv/scan`, RViz2 locally, and `ros2 bag record` for
 
 Run `python -m unittest discover -s tests`. The pure tests need no Gazebo; they do not replace real robot/ROS integration tests. Never commit passwords, cookies, AIS keys, simulator administrator configuration or private evaluation data. GPL wave/simulator dependencies are not bundled into this MIT student source repository; retain their own licenses when distributing runtime images.
 
-Developed at [IOES-Lab, KMOU](https://lab.wschoi.com). Simulator source: [IOES-Lab/WWW-POSIM](https://github.com/IOES-LAB/WWW-POSIM).
+Developed at [IOES-Lab, KMOU](https://lab.wschoi.com). Simulator downloads and documentation are available from the platform’s main page; this repository contains the student project.
 
 The installed launcher compares the runtime version, protocol, rule version and adapter content hash with the server before granting local operation, then rechecks every five minutes. An incompatible source/image update stops the local runtime; update between runs.
 
-[Measured native acceptance, real baseline scores and release limits](docs/validation.md).
+[Baseline scores and ranking rules](docs/scoring.md).
 
 Current client is **0.2.2**, adding the Evaluation app; the minimum compatible legacy client remains 0.2.1. Updates reuse unchanged Docker layers.

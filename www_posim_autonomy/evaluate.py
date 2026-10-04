@@ -62,10 +62,11 @@ def evaluate(api,task,command,output,*,practice=False,seed=0,alias='Participant'
                  graded=not practice,competition_seed=seed if practice else 0)
     # All preflight checks happen before admission or world mutations.
     probe=subprocess.run([sys.executable,'-c','import rclpy; import rosidl_runtime_py; import geometry_msgs.msg'],capture_output=True)
-    if probe.returncode:raise RuntimeError('Run Evaluation from a ROS2-enabled Python environment (native Linux or the local simulator client container).')
+    if probe.returncode:raise RuntimeError('Run Evaluation from a ROS2-enabled Python environment (the native ROS environment or the local simulator client container).')
     output=Path(output).resolve();output.mkdir(parents=True,exist_ok=True)
     queued=False;scoring=False;relay=None;controller=None;logs=[];result=None
-    env=dict(os.environ,ROS_DOMAIN_ID='73',ROS_AUTOMATIC_DISCOVERY_RANGE='LOCALHOST')
+    # Keep the student/relay DDS network independent of the local engine (73).
+    env=dict(os.environ,ROS_DOMAIN_ID='76',ROS_AUTOMATIC_DISCOVERY_RANGE='LOCALHOST')
     try:
         if enabled:
             api.call('/beta/queue',start);queued=True

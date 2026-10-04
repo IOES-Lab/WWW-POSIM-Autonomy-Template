@@ -53,15 +53,20 @@ Account → Request more usage collects affiliation, status, estimated total hou
 |---|---|---|
 | Linux | Docker Engine, instructor-provided native AMD64/ARM64 runtime; native ROS optional | NVIDIA driver + Container Toolkit + `--gpu`; confirm EGL actually uses NVIDIA |
 | Windows PC | Docker Desktop with WSL2; launch Python/controller from an Ubuntu WSL terminal | Supported NVIDIA GPU passthrough path; actual graphics/EGL and sensor validation still required |
-| Apple Silicon Mac | Docker Desktop ARM64 and Python 3.10+ | Current container uses software rendering; Apple GPU passthrough is unavailable for this Gazebo path |
-| Intel Mac | Native AMD64 Docker runtime once built/published | Same CPU fallback limitation; not validated on an Intel Mac here |
+| Apple Silicon Mac · macOS 27+ | Native WWW-POSIM DMG/Homebrew app; bundled ROS environment | Gazebo Metal rendering on the Mac GPU |
 
-Gazebo itself has a documented Homebrew installation, but a Mac-native build of POSIM, ROS and the external wave dependency is a separate integration effort. Do not present that as working local GPU acceleration. Ubuntu host ROS commands below apply only after sourcing the matching ROS installation. A browser alone does not install ROS on a student's computer.
+For Apple Silicon, install the native simulator app from [the public Homebrew/DMG distribution](https://github.com/woensug-choi/homebrew-www-posim). Open the app, sign in and prepare a ROS 2 direct-control world. In every controller terminal run:
+
+```sh
+eval "$(/Applications/WWW-POSIM.app/Contents/MacOS/WWW-POSIM --ros-env)"
+```
+
+Create the student virtual environment with this bundled Python and `--system-site-packages`, then install your template project with `pip install -e .`. The following Docker setup is for Linux and Windows. Ubuntu host ROS commands apply after sourcing the matching installation.
 
 1. Install Docker from its official vendor/distribution instructions and Python 3.10 or newer. On Windows enable WSL2 and use an Ubuntu terminal. Allocate at least 8GB to the Docker VM for this example, preferably 12GB on a machine with 24GB+ RAM. Close unrelated heavy builds while measuring.
 2. On GitHub choose **Use this template → Create a new repository**, clone your copy and `cd` into it.
 3. `python3 -m venv --system-site-packages .venv`; activate it; `pip install -e .`.
-4. Obtain architecture-matching runtime/web image tags from the instructor. Current public runtime-registry releases are **not yet published**. The simulator owner can build the parent repository and distribute a reviewed image with its GPL dependency notices/source. Do not use CPU-emulated ARM on an x86 GPU server as a performance benchmark.
+4. Obtain architecture-matching runtime/web image tags from the instructor. The image version must match the class server; retain its upstream dependency source and license notices. Do not use CPU-emulated ARM on an x86 GPU server as a performance benchmark.
 5. Run:
 
 ```bash
@@ -74,11 +79,11 @@ www-posim --server https://YOUR_SERVER/api --email YOU@example.edu \
 
 Open `http://127.0.0.1:3300`. Keep the launcher running; Ctrl+C ends the lease and stops Compose. Data and downloaded terrain remain in `~/.www-posim/data`. The launcher holds a random device ID, not the password. Local ROS/Gazebo/web dependencies live in cached image layers. Server lease renewal is 20s, expiry 60s; renewal/connection failures stop the local runtime. Initial native startup and camera warm-up count in this local lease; idle preparation and queue time do not.
 
-The initial images are large because ROS, rendering, GIS, simulator and SITL are included. Later releases should retain dependency layers and update small versioned Python/web layers. The client checks compatibility before running and every five minutes. An incompatible protocol/minimum version requires an update between runs. Image tags/release checksums must come from the operator; the launcher does not execute arbitrary update URLs. No automatic signed desktop installer/store distribution or offline license is claimed.
+The initial images are large because ROS, rendering, GIS, simulator and SITL are included. Later releases should retain dependency layers and update small versioned Python/web layers. The client checks compatibility before running and every five minutes. An incompatible protocol/minimum version requires an update between runs. Image tags/release checksums must come from the operator; the launcher does not execute arbitrary update URLs. The simulator package is installed separately from these student tools; the account server renews its running-time permission.
 
 ### ROS terminal without native ROS installation
 
-All three OS paths can run student code inside a separate local ROS terminal container using the same instructor runtime image. Mount only your template project, choose a different ROS domain, and connect through the local or remote gateway:
+Linux and Windows can run student code inside a separate local ROS terminal container; Apple Silicon uses the bundled native environment. For the container workflow, use the same instructor runtime image. Mount only your template project, choose a different ROS domain, and connect through the local or remote gateway:
 
 ```bash
 docker run --rm -it --cpus 1 --memory 1g \
@@ -197,7 +202,7 @@ Common faults:
 - Poor score: ordered target/hold logic, cross-track/yaw/depth error and conservative hull clearance may differ from visual impressions. Read the native report.
 - Server busy: read the estimated deadline, return later or practice locally. Class Pro does not reserve a web slot.
 - Email not delivered: SMTP is an operator dependency. Do not accept a user-provided domain as proof of affiliation.
-- GPU is idle: verify renderer/device, not only `nvidia-smi` availability. Mac Docker uses llvmpipe here. Profile CPU physics, renderer, sensor conversion and memory before buying hardware.
+- GPU is idle: verify renderer/device, not only `nvidia-smi` availability. The native Apple Silicon app uses Metal; a Mac Docker engine uses software rendering. Profile CPU physics, renderer, sensor conversion and memory before buying hardware.
 
 ## Primary references
 
@@ -214,7 +219,7 @@ The installed launcher compares the runtime version, protocol, rule version and 
 
 ## Measured acceptance and release status
 
-[Native tests, real provisional ArduPilot scores and platform limits](validation.md).
+Baseline scores and the five-seed ranking rules are described in [Scoring](scoring.md).
 
 Minimum installed client: **0.2.1**. Previous 0.2.0 requires updating for the simulation-time and neutral-shutdown fixes. Compatibility is checked every five minutes; required updates stop execution and are applied between runs.
 
