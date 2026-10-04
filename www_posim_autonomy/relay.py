@@ -22,7 +22,7 @@ from tf2_msgs.msg import TFMessage
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--url',default='ws://127.0.0.1:19090')
-parser.add_argument('--profile',type=Path,default=Path(__file__).with_name('profile.json'))
+parser.add_argument('--profile',type=Path,required=True,help='Session profile downloaded by www-posim-connect')
 parser.add_argument('--report',type=Path)
 parser.add_argument('--rviz-config',type=Path,help='Write a session-specific RViz view before connecting')
 parser.add_argument('--api-url',help='Beta API, e.g. http://127.0.0.1:19090/api through SSH')
