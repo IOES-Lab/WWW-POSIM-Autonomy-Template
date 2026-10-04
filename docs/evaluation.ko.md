@@ -29,13 +29,15 @@ Linux 네이티브 ROS에서는 환경을 source한 뒤 `--client-image`를 생�
 
 ## 실제 배포 범위
 
+Linux·macOS·Windows [설치본 CI](https://github.com/IOES-Lab/WWW-POSIM-Autonomy-Template/actions/runs/37191524725)가 모두 통과했습니다. 각 OS 바이너리에서 `--version`을 확인하고 Windows `.exe`와 Linux `.deb`를 생성했습니다. 보관 기간 내 GitHub 실행 페이지에서 아티팩트를 받을 수 있습니다. 클라이언트 빌드 검증이며 각 OS의 GUI 설치·전체 시뮬레이터 엔진 검증은 별도입니다.
+
 | 형식 | 포함 내용 | 이번 검증 |
 |---|---|---|
 | Python wheel | 템플릿·실행기·채점 GUI/CLI | 0.2.2 빌드, 단위 검사 통과 |
 | Mac ARM64 `.app` | Python/Tk를 포함한 클라이언트, 압축 약 12 MB | 빌드·CLI 버전 확인. Mac 잠금으로 앱 화면 직접 검증은 미완료 |
 | Debian `.deb` | Python 클라이언트·데스크톱 진입점 | Ubuntu 컨테이너에서 빌드·추출·버전 확인. 전체 네이티브 엔진 설치본은 아님 |
 | Homebrew Cask | 해시를 고정한 Mac 앱 archive | 로컬 파일용 생성 완료. 같은 파일을 공개한 뒤 URL 설정 필요 |
-| Windows `.exe` | PyInstaller 클라이언트와 Inno Setup | 대상 OS CI·빌드 레시피 제공. Windows 실행 검증은 미완료 |
+| Windows `.exe` | PyInstaller 클라이언트와 Inno Setup | Windows CI에서 `.exe` 생성·CLI 버전 검사 통과. GUI 설치와 네이티브 GPU 엔진 시험은 미완료 |
 | Docker 이미지 | 엔진 또는 PC용 ROS 제어 클라이언트 | 로컬 ARM64 빌드 유지. 공개 AMD64/ARM64 릴리스는 추가 필요 |
 
 `python tools/build_installer.py wheel`, `desktop`, `deb`로 빌드합니다. 데스크톱 바이너리는 대상 OS에서 만들어야 합니다([PyInstaller](https://pyinstaller.org/en/latest/)). `packaging/windows.iss`와 GitHub Actions 워크플로는 Windows 설치본 생성을 준비하며 공개 릴리스를 자동 발행하지 않습니다.

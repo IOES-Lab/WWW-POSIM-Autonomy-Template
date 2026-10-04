@@ -31,13 +31,15 @@ Local scores/logs can be exported for feedback and reports. A native machine own
 
 ## Installer status
 
+Target-OS [installer CI](https://github.com/IOES-Lab/WWW-POSIM-Autonomy-Template/actions/runs/37191524725) completed successfully for Linux, macOS and Windows. Each frozen client passed `--version`; Windows also created the Inno Setup `.exe`, and Linux created the `.deb`. Download the job artifacts while retained by GitHub. These are client builds; they do not prove that the full simulator engine or GUI installation works on every target.
+
 | Artifact | Contents | Verified here |
 |---|---|---|
 | Python wheel | Starter, launcher, Evaluation GUI and CLI | Built at 0.2.2; pure unit tests |
 | Mac ARM64 `.app` archive | Frozen Python/Tk client, about 12 MB compressed | Build and CLI version succeeded; native app screen inspection blocked by a locked Mac |
 | Debian `.deb` | Python client plus desktop entry, system dependencies | Built, extracted and version checked in Ubuntu container; not a full native engine installer |
 | Homebrew Cask | SHA-256-pinned Mac app archive | Generated for local archive; public URL requires publishing the identical archive |
-| Windows installer `.exe` | Frozen client wrapped with Inno Setup | Build recipe and OS-specific CI supplied; Windows build/install not validated on this Mac |
+| Windows installer `.exe` | Frozen client wrapped with Inno Setup | Windows CI built the `.exe` and passed CLI version smoke test; GUI installation and native GPU engine not yet tested |
 | Simulator / client OCI images | Gazebo/ROS/POSIM/waves, or ROS controller client | ARM64 local builds retained; matching public AMD64/ARM64 releases are still required |
 
 Build with `python tools/build_installer.py wheel`, `desktop`, or `deb`. Desktop builds must run on their target OS; [PyInstaller is not a cross-compiler](https://pyinstaller.org/en/latest/). `packaging/windows.iss` wraps the Windows result, and `.github/workflows/installers.yml` builds target-OS artifacts without automatically publishing a release. Render a local Cask with:
