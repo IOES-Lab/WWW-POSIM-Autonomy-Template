@@ -1,0 +1,31 @@
+services:
+  simulation:
+    image: ${WWW_POSIM_RUNTIME_IMAGE:?provide a native runtime image}
+    user: docker
+    init: true
+    entrypoint: [bash, -lc]
+    command: ["source /opt/ros/lyrical/setup.bash; source /home/docker/dave_ws/install/setup.bash; exec python3 /opt/wwos/browser_adapter/run.py"]
+    environment:
+      WWOS_START_IDLE: '1'
+      WWOS_REQUIRE_LICENSE: '1'
+      WWOS_BETA_ENABLED: '0'
+      GZ_PARTITION: www-posim-standalone
+      ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    volumes: ["${WWW_POSIM_DATA}:/home/docker/wwos-data"]
+    cpus: 4
+    mem_limit: 4g
+    shm_size: 1g
+    stop_grace_period: 45s
+  web:
+    image: ${WWW_POSIM_WEB_IMAGE:?provide a matching web image}
+    environment:
+      SIM_API_URL: http://simulation:8000
+    cpus: 1
+    mem_limit: 1g
+  gateway:
+    image: nginx:stable-alpine
+    ports: ["127.0.0.1:3300:80"]
+    volumes: ["${WWW_POSIM_HOME}/nginx.conf:/etc/nginx/conf.d/default.conf:ro"]
+    depends_on: [simulation,web]
+    mem_limit: 128m
