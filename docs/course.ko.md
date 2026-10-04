@@ -248,3 +248,5 @@ Git 커밋, 플랫폼·규칙 버전, 기체/SDF·파라미터 버전, 센서 �
 ## 실측 검증과 배포 상태
 
 [Native tests, real provisional ArduPilot scores and platform limits](validation.md).
+
+현재 설치형 클라이언트의 최소 버전은 **0.2.1**입니다. 이전 0.2.0은 임무 시간·종료 수정 때문에 업데이트해야 합니다. 실행 중에는 5분마다 호환성을 확인하고, 필요한 업데이트는 실행을 종료한 뒤 적용합니다.

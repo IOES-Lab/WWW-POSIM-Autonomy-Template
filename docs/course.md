@@ -215,3 +215,5 @@ The installed launcher compares the runtime version, protocol, rule version and 
 ## Measured acceptance and release status
 
 [Native tests, real provisional ArduPilot scores and platform limits](validation.md).
+
+Minimum installed client: **0.2.1**. Previous 0.2.0 requires updating for the simulation-time and neutral-shutdown fixes. Compatibility is checked every five minutes; required updates stop execution and are applied between runs.
