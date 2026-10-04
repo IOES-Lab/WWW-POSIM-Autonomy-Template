@@ -1,0 +1,12 @@
+__pycache__/
+*.egg-info/
+.venv/
+build/
+dist/
+*.bag
+*.db3
+profile.json
+mission.json
+.local/
+.env
+credentials*
