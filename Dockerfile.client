@@ -1,0 +1,8 @@
+ARG WWW_POSIM_RUNTIME_IMAGE=wwos-browser-runtime:e05a9fb-arm64
+FROM ${WWW_POSIM_RUNTIME_IMAGE}
+USER root
+COPY www_posim_autonomy /opt/www-posim-client/www_posim_autonomy
+RUN mkdir -p /results && chmod 777 /results
+ENV PYTHONPATH=/opt/www-posim-client
+ENTRYPOINT ["bash","-lc","source /opt/ros/lyrical/setup.bash; exec python3 -m www_posim_autonomy.evaluation_worker"]
+USER docker

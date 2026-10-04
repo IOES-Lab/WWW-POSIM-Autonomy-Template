@@ -9,6 +9,7 @@ from pathlib import Path
 import signal
 import threading
 import time
+import sys
 from urllib.parse import urlparse
 import websocket
 from .beta_login import login
@@ -29,13 +30,17 @@ parser.add_argument('--api-url',help='Beta API, e.g. http://127.0.0.1:19090/api 
 parser.add_argument('--username',help='Beta username; password is prompted locally')
 parser.add_argument('--origin',default='http://127.0.0.1:3000',help='Origin allowed by the server WebSocket gateway')
 parser.add_argument('--control',action='store_true',help='Forward the profile command topics to the direct propulsion gateway')
+parser.add_argument('--auth-stdin',action='store_true',help=argparse.SUPPRESS)
+parser.add_argument('--ready-file',type=Path,help=argparse.SUPPRESS)
 args=parser.parse_args()
 url=urlparse(args.url)
 if url.scheme!='wss' and not (url.scheme=='ws' and url.hostname in ('127.0.0.1','localhost','::1','host.docker.internal')):
     parser.error('Use a loopback SSH tunnel, or a TLS wss endpoint with certificate verification.')
 profile=json.loads(args.profile.read_text())
 if bool(args.api_url)!=bool(args.username):parser.error('--api-url and --username must be used together')
-cookie=login(args.api_url,args.username) if args.api_url else None
+if args.auth_stdin and args.api_url:parser.error('Choose one authentication method')
+cookie=json.load(sys.stdin).get('cookie') if args.auth_stdin else login(args.api_url,args.username) if args.api_url else None
+if cookie is not None and (not isinstance(cookie,str) or len(cookie)>4096 or any(c in cookie for c in '\r\n')):parser.error('Invalid authentication input')
 if profile.get('remote_publish') is not False:parser.error('A read-only profile is required')
 entries=profile['topics']
 if not entries or len(entries)>(16 if cookie else 32) or len({e['name'] for e in entries})!=len(entries):parser.error('Invalid topic list')
@@ -100,6 +105,10 @@ def worker():
                     # rosbridge represents uint8[] image/point-cloud bytes as base64.
                     if 'data' in fields and isinstance(fields['data'],str):fields=dict(fields,data=list(base64.b64decode(fields['data'],validate=True)))
                     set_message_fields(message,normalize_fields(message,fields));publisher.publish(message);counts[name]=counts.get(name,0)+1
+                    if args.ready_file and cls.__module__.startswith('nav_msgs.msg._odometry') and not args.ready_file.exists():
+                        temporary=args.ready_file.with_suffix('.tmp')
+                        temporary.write_text(json.dumps({'session_nonce':profile.get('session_nonce'),'topic':name}))
+                        temporary.replace(args.ready_file)
                     if cls.__module__.startswith('nav_msgs.msg._odometry'):
                         # A client-local alias, derived only from received native
                         # odometry, keeps RViz on the robot without competing

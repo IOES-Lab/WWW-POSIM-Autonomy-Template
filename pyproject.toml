@@ -4,16 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "www-posim-autonomy"
-version = "0.2.1"
+version = "0.2.2"
 description = "ROS 2 classroom autonomy starter and licensed local simulator launcher"
 requires-python = ">=3.10"
 dependencies = ["websocket-client>=1.7,<2", "PyYAML>=6,<7", "numpy>=1.24", "scipy>=1.11"]
 
 [project.scripts]
-www-posim = "www_posim_autonomy.standalone:main"
+www-posim = "www_posim_autonomy.entry:main"
 www-posim-surface = "www_posim_autonomy.buoy_avoidance:main"
 www-posim-underwater = "www_posim_autonomy.underwater:main"
 www-posim-connect = "www_posim_autonomy.connect:main"
+www-posim-evaluate = "www_posim_autonomy.evaluate:main"
+www-posim-evaluation = "www_posim_autonomy.evaluation_app:main"
 
 [tool.setuptools.packages.find]
 include = ["www_posim_autonomy*"]

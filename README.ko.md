@@ -34,3 +34,7 @@ ROS 토픽과 힘의 단위·좌표계, 안전 중지, 여섯 과제와 채점 �
 Linux/macOS는 `sh install.sh`, Windows PowerShell은 `./install.ps1`로 Python 템플릿·실행기를 설치합니다. Python 3.10 이상이 필요하며 ROS/Gazebo 런타임은 별도의 Docker 이미지입니다.
 
 설치형 실행기는 동작 전에 서버와 런타임의 버전·프로토콜·채점 규칙·어댑터 내용 해시를 비교하고 5분마다 다시 검사합니다. 호환되지 않는 업데이트가 있으면 로컬 런타임을 종료합니다. 실행 중간이 아닌 실행 사이에 코드와 이미지를 업데이트하세요.
+
+## 버튼 하나로 공식 채점
+
+**WWW-POSIM Evaluation** 앱 또는 `www-posim evaluation`에서 로컬 코드 폴더·명령·과제를 고르고 **Evaluate on server**를 누릅니다. 알고리즘은 내 PC, Gazebo·센서·점수 기록은 서버에서 실행합니다. 대기열·인증된 ROS 연결·채점 시작·결과 저장·정리를 함께 처리합니다. **Practice locally**는 로그인된 설치형 시뮬레이터를 사용합니다. 현재 클라이언트는 0.2.2, 기존 최소 호환 버전은 0.2.1입니다. [상세 사용법·기록 신뢰성·실제 설치본 범위](docs/evaluation.ko.md).

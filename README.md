@@ -36,9 +36,13 @@ www-posim-surface
 www-posim-underwater --depth 2
 ```
 
-For localhost testing use `http://127.0.0.1:3000/api`. The connection uses authenticated HTTPS/WSS; an SSH tunnel is optional. Passwords are prompted, never command-line arguments. The helper downloads a fresh `profile.json`. You currently enter the password again for the relay; this avoids persisting credentials.
+For localhost testing use `http://127.0.0.1:3000/api`. The connection uses authenticated HTTPS/WSS; an SSH tunnel is optional. Passwords are prompted, never command-line arguments. The helper downloads a fresh `profile.json`. Login is prompted once; a short-lived cookie reaches the relay through private standard input and is not persisted.
 
 The surface starter solves the original **two-buoy practice example**, not all competition tasks. Extend it to read the course targets from `profile.json` and to maintain position/heading, identify markers, route around obstacles and return safely. Underwater force allocation is explicitly documented and bounded; start with depth holding before adding horizontal movement.
+
+## One-button official evaluation
+
+Open **WWW-POSIM Evaluation** (`www-posim evaluation`), choose your local project, command and task, then select **Evaluate on server**. Your algorithm runs on your PC; the server provides native Gazebo sensors and stores the score. Queue admission, ROS relay, scoring start, result export and cleanup run together. **Practice locally** uses your licensed installed simulator. [GUI, CLI, scoring trust and installer status](docs/evaluation.md).
 
 ## Installed standalone simulator
 
@@ -90,4 +94,4 @@ The installed launcher compares the runtime version, protocol, rule version and 
 
 [Measured native acceptance, real baseline scores and release limits](docs/validation.md).
 
-Current client **0.2.1** is required; this includes the measured simulation-time/clean shutdown fixes. Updates reuse unchanged Docker layers.
+Current client is **0.2.2**, adding the Evaluation app; the minimum compatible legacy client remains 0.2.1. Updates reuse unchanged Docker layers.

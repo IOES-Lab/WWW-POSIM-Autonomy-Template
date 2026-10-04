@@ -10,16 +10,30 @@ import sys
 import urllib.request
 from urllib.parse import urlparse
 
+class SameOriginRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self,req,fp,code,msg,headers,newurl):
+        before,after=urlparse(req.full_url),urlparse(newurl)
+        if (before.scheme,before.hostname,before.port)!=(after.scheme,after.hostname,after.port):
+            raise ValueError('Cross-origin API redirects are not allowed.')
+        return super().redirect_request(req,fp,code,msg,headers,newurl)
+
 class API:
-    def __init__(self,url,email,password):
+    def __init__(self,url,email=None,password=None):
         p=urlparse(url)
         if p.scheme!='https' and not (p.scheme=='http' and p.hostname in ('localhost','127.0.0.1','host.docker.internal')):raise ValueError('Use HTTPS, or a local simulator/tunnel.')
-        self.url=url.rstrip('/');self.jar=http.cookiejar.CookieJar()
-        self.opener=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.jar))
-        self.call('/auth/login',{'username':email,'password':password})
+        self.url=url.rstrip('/');self.jar=http.cookiejar.CookieJar();self._cookie=None
+        self.opener=urllib.request.build_opener(SameOriginRedirect(),urllib.request.HTTPCookieProcessor(self.jar))
+        if email is not None:self.call('/auth/login',{'username':email,'password':password})
+    def cookie(self):
+        return self._cookie or '; '.join(c.name+'='+c.value for c in self.jar)
+    def use_cookie(self,value):
+        if value and (not isinstance(value,str) or len(value)>4096 or any(c in value for c in '\r\n')):raise ValueError('Invalid authentication input.')
+        self._cookie=value
     def call(self,path,body=None):
-        csrf=next((c.value for c in self.jar if c.name=='wwos_csrf'),'')
-        req=urllib.request.Request(self.url+path,data=json.dumps(body).encode() if body is not None else None,headers={'Content-Type':'application/json','X-WWOS-CSRF':csrf})
+        csrf=next((item.split('=',1)[1] for item in self.cookie().split('; ') if item.startswith('wwos_csrf=')),'')
+        headers={'Content-Type':'application/json','X-WWOS-CSRF':csrf}
+        if self._cookie:headers['Cookie']=self._cookie
+        req=urllib.request.Request(self.url+path,data=json.dumps(body).encode() if body is not None else None,headers=headers)
         with self.opener.open(req,timeout=15) as r:return json.load(r)
 
 def main():
@@ -29,9 +43,12 @@ def main():
     path=Path(args.profile);path.write_text(json.dumps(profile,indent=2));path.chmod(0o600)
     endpoint=urlparse(args.server);origin=endpoint._replace(path='',query='',fragment='').geturl()
     url=endpoint._replace(scheme='wss' if endpoint.scheme=='https' else 'ws',path='/ros',query='',fragment='').geturl()
-    # Relay prompts separately; passwords are never put in process arguments or files.
-    command=[sys.executable,'-m','www_posim_autonomy.relay','--url',url,'--api-url',args.server,'--username',args.email,'--origin',origin,'--profile',str(path)]
+    # Private stdin transfers only the short-lived login cookie. No second
+    # password prompt, credential file or secret command-line argument.
+    command=[sys.executable,'-m','www_posim_autonomy.relay','--url',url,'--auth-stdin','--origin',origin,'--profile',str(path)]
     if args.control:command+=['--control']
-    raise SystemExit(subprocess.call(command))
+    process=subprocess.Popen(command,stdin=subprocess.PIPE,text=True)
+    process.stdin.write(json.dumps({'cookie':api.cookie()}));process.stdin.close()
+    raise SystemExit(process.wait())
 
 if __name__=='__main__':main()

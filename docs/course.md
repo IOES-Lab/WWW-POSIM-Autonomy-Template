@@ -217,3 +217,7 @@ The installed launcher compares the runtime version, protocol, rule version and 
 [Native tests, real provisional ArduPilot scores and platform limits](validation.md).
 
 Minimum installed client: **0.2.1**. Previous 0.2.0 requires updating for the simulation-time and neutral-shutdown fixes. Compatibility is checked every five minutes; required updates stop execution and are applied between runs.
+
+## Installed Evaluation lab
+
+After improving your local controller, use the installed Evaluation app to select the task and local argument list, then Evaluate on server. The algorithm remains on your PC while the server Gazebo observes the official run. The app manages admission, relay, scoring and cleanup; it saves finished or interrupted diagnostic evidence. Read [the step-by-step GUI/CLI workflow and trust model](evaluation.md). Local JSON exports are practice evidence and cannot award public points.

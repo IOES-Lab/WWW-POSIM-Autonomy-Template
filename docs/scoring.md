@@ -53,3 +53,7 @@ Unmeasured rows say **Not measured**, never a made-up zero or 100. One real seed
 ## Baseline integrity
 
 The shipped ArduPilot baseline is measured in a fresh server world. The full FCU parameter list is forced and checked before and after each run. Only `SIM_SPEEDUP` (checked separately at 1×), `STAT_RUNTIME`/`STAT_FLTTIME` (read-only elapsed counters), and `BARO1_GND_PRESS`/`BARO2_GND_PRESS`/`BARO3_GND_PRESS` (read-only, volatile automatic ground-pressure calibration) are excluded from the configuration hash. A changed control parameter invalidates the score. A run stays in `finalizing` until controller shutdown, the end check and the database commit finish; releasing its slot beforehand invalidates it. Invalid development attempts are retained privately and excluded from public standings. A pinned zero is a valid unsuccessful run, not a fabricated success.
+
+## Result export and local evaluation
+
+The installed Evaluation app runs the participant algorithm on their PC and connects it to an exclusive server Gazebo world. The server starts scoring before that command starts and continuously checks official physics/wave conditions. Completed or interrupted evidence is exported by its owner; after releasing the slot, `/competition/run/export?run_id=...` still requires that same owner. The JSON hash detects changes to the export and is not a cheating-proof certificate. There is no endpoint awarding an official score from a local file. An administrator also cannot download another owner's private export through this endpoint.
