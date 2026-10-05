@@ -87,7 +87,7 @@ Linux·Windows에서는 로컬 ROS 클라이언트 컨테이너로 코드를 실
 
 ```bash
 docker run --rm -it --cpus 1 --memory 1g \
-  -e ROS_DOMAIN_ID=73 -e ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
+  -e ROS_DOMAIN_ID=76 -e ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
   -v "$PWD:/student" -w /student --entrypoint bash INSTRUCTOR_NATIVE_RUNTIME
 source /opt/ros/lyrical/setup.bash
 python3 -m venv --system-site-packages /tmp/student-env
@@ -102,7 +102,7 @@ Linux에서 호스트의 서버/터널에 접속할 때는 `--add-host host.dock
 WAM-V ROS2 직접 제어 월드를 실행하고 프로필을 내려받아 릴레이를 시작합니다.
 
 ```bash
-export ROS_DOMAIN_ID=73
+export ROS_DOMAIN_ID=76
 export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 www-posim-connect --server https://YOUR_SERVER/api --email YOU@example.edu --control
 # 같은 ROS 환경의 다른 터미널:

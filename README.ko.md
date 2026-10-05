@@ -11,7 +11,7 @@ GitHub의 **Use this template → Create a new repository**로 개인·팀 저�
 python3 -m venv --system-site-packages .venv
 . .venv/bin/activate
 pip install -e .
-export ROS_DOMAIN_ID=73
+export ROS_DOMAIN_ID=76
 www-posim-connect --server https://YOUR_SERVER/api --email YOU@example.edu --control
 # 다른 터미널에서
 www-posim-surface

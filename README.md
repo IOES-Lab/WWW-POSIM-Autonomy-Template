@@ -27,7 +27,7 @@ On Ubuntu with native ROS, first source `/opt/ros/lyrical/setup.bash`. On Apple 
 Register with your **email address** on the WWW-POSIM server and verify it. Choose WAM-V or BlueROV2, **ROS2 direct control**, a course and **Start world**. Once ready:
 
 ```bash
-export ROS_DOMAIN_ID=73
+export ROS_DOMAIN_ID=76
 export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 www-posim-connect --server https://YOUR_SERVER/api --email YOU@example.edu --control
 # another terminal, same ROS domain

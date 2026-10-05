@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 from types import SimpleNamespace
 from www_posim_autonomy.evaluate import evaluate
-from www_posim_autonomy.connect import API,SameOriginRedirect
+from www_posim_autonomy.connect import API,SameOriginRedirect,main as connect_main
 
 class Orchestration(unittest.TestCase):
     def test_queue_cancellation_releases_only_its_own_admission(self):
@@ -73,6 +73,27 @@ class Orchestration(unittest.TestCase):
             self.assertLess(events.index('/competition/run/start'),events.index('algorithm_started'))
             self.assertEqual(events[-1],'/beta/release')
             self.assertNotIn(secret,''.join(p.read_text() for p in Path(folder).iterdir()))
+    def test_installed_local_connector_needs_no_password_and_writes_private_profile(self):
+        profile=dict(session_nonce='local-native-test',control_mode='ros2',command_topics=[dict(name='/wwos/cmd_vel')])
+        class Client:
+            def call(self,path):return profile
+            def cookie(self):return ''
+        child=SimpleNamespace(stdin=SimpleNamespace(write=lambda _:None,close=lambda:None),wait=lambda:0)
+        with tempfile.TemporaryDirectory() as folder:
+            target=Path(folder)/'profile.json'
+            args=['www-posim-connect','--server','http://127.0.0.1:3300/api','--local','--control','--profile',str(target)]
+            with patch('sys.argv',args),patch('www_posim_autonomy.connect.API',return_value=Client()) as api,patch('www_posim_autonomy.connect.getpass.getpass') as password,patch('www_posim_autonomy.connect.subprocess.Popen',return_value=child) as launch:
+                with self.assertRaises(SystemExit) as exit:connect_main()
+                self.assertEqual(exit.exception.code,0);password.assert_not_called()
+                api.assert_called_once_with('http://127.0.0.1:3300/api',None,None)
+                self.assertIn('--control',launch.call_args.args[0])
+                self.assertEqual(target.stat().st_mode&0o077,0)
+                self.assertEqual(json.loads(target.read_text()),profile)
+    def test_local_connector_rejects_remote_destination_before_any_request(self):
+        args=['www-posim-connect','--server','https://example.test/api','--local']
+        with patch('sys.argv',args),patch('www_posim_autonomy.connect.API') as api,patch('sys.stderr'):
+            with self.assertRaises(SystemExit):connect_main()
+            api.assert_not_called()
     def test_cross_origin_redirect_cannot_forward_login(self):
         import urllib.request
         request=urllib.request.Request('https://first.test/api/auth/login',data=b'private')

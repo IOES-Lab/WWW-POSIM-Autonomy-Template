@@ -10,3 +10,6 @@ mission.json
 .local/
 .env
 credentials*
+
+# Generated session-specific RViz configuration.
+session.rviz

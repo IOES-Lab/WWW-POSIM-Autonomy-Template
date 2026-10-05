@@ -87,7 +87,7 @@ Linux and Windows can run student code inside a separate local ROS terminal cont
 
 ```bash
 docker run --rm -it --cpus 1 --memory 1g \
-  -e ROS_DOMAIN_ID=73 -e ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
+  -e ROS_DOMAIN_ID=76 -e ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
   -v "$PWD:/student" -w /student --entrypoint bash INSTRUCTOR_NATIVE_RUNTIME
 source /opt/ros/lyrical/setup.bash
 python3 -m venv --system-site-packages /tmp/student-env
