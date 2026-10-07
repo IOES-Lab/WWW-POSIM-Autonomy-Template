@@ -45,7 +45,7 @@ Register using an email address and a password of at least 12 characters. Verify
 
 Default local quota is 3 wall-hours/day; web quota is 1 wall-hour/day. UTC midnight resets daily accounting. Web access is initially admitted to five members and two independent worlds can run simultaneously. A busy slot shows its current deadline estimate; you can queue, return later, or use local practice. Earlier release/startup/cleanup can change that estimate. Waiting is not running time.
 
-Account → Request more usage collects affiliation, status, estimated total hours, optional class/invitation code, purpose and requested period. An operator can approve standalone Pro starting immediately for six calendar months, or use a dated semester coupon. Pro never automatically increases web quota. One installed session per account prevents parallel devices multiplying the allowance. The open-source local client is not secure DRM; a modified local report cannot become an official leaderboard score.
+All modes are free. **Account → Free Pro mode → Switch to free Pro** collects affiliation, status, estimated usage and optional purpose, then immediately activates six calendar months of unlimited standalone simulation. These details are kept only for usage administration, with no review or payment. Existing active periods are not extended by repeated submissions; after expiry you can activate again. A dated class coupon is another option. Pro does not increase web quota. One installed session per account prevents parallel devices multiplying the allowance. The open-source local client is not secure DRM; a modified local report cannot become an official leaderboard score.
 
 ### Choose an operating-system path
 
